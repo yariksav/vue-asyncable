@@ -1,25 +1,24 @@
 {
   "name": "vue-asyncable",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "dist/vue-asyncable.umd.js",
   "module": "dist/vue-asyncable.esm.js",
   "unpkg": "dist/vue-asyncable.min.js",
-  "browser": {
-    "./sfc": "src/vue-asyncable.vue"
-  },
+  "types": "types/index.d.ts",
   "files": [
     "dist/*",
     "src/*"
   ],
   "scripts": {
-    "build": "npm run build:unpkg & npm run build:es & npm run build:umd",
+    "build": "npm run lint && npm run build:unpkg & npm run build:es & npm run build:umd",
     "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/vue-asyncable.umd.js",
     "build:es": "rollup --config build/rollup.config.js --format es --file dist/vue-asyncable.esm.js",
     "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/vue-asyncable.min.js",
     "build:copy": "npm run build && bash build/copy.sh",
     "test": "jest --env=jsdom",
-    "prepublish": "npm run build",
+    "lint": "eslint --ext js --ext vue src",
+    "prepublish": "npm run test && npm run build",
     "coverage": "jest --env=jsdom --coverage --coverageReporters=text-lcov | coveralls"
   },
   "repository": {
@@ -75,7 +74,11 @@
     "transform": {
       ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest",
       "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
-    }
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!<rootDir>/node_modules/"
+    ]
   },
   "eslintIgnore": [
     "dist/"

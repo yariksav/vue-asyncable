@@ -1,4 +1,4 @@
-import { promisify } from '../src/promisify'
+import { promisify } from '../src/entry'
 import { generateAsyncFn } from './utils'
 const context = { foo: 'bar' }
 

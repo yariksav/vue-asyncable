@@ -51,7 +51,7 @@ export function sanitizeComponent (Component) {
 }
 
 export const hasAsyncPreload = (options) => {
-  return Boolean((options.asyncData || options.fetch) && !options.hasAsyncData)
+  return Boolean(!options.hasAsyncData && options.asyncData)
 }
 
 export const ensureVmAsyncData = (vm, context) => {
@@ -59,13 +59,10 @@ export const ensureVmAsyncData = (vm, context) => {
     return Promise.resolve({})
   }
   const promises = []
-
   if (vm.$options.asyncData) {
     let promise = promisify.call(vm, vm.$options.asyncData, context).then((data) => {
-      if (data) {
-        for (let key in data) {
-          vm.$set(vm, key, data[key])
-        }
+      for (let key in data) {
+        vm.$set(vm, key, data[key])
       }
       return data
     })
@@ -75,6 +72,7 @@ export const ensureVmAsyncData = (vm, context) => {
   if (vm.$options.fetch) {
     promises.push(vm.$options.fetch(context))
   }
+  vm.$options.hasAsyncData = true
   return Promise.all(promises)
 }
 

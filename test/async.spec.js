@@ -1,5 +1,3 @@
-// import { promisify as p } from 'util'
-// const context = { foo: 'bar' }
 import Vue from 'vue'
 import {
   ensureAsyncData,
@@ -87,5 +85,6 @@ describe('async', () => {
     const res = await ensureAsyncData()
     expect(res).toEqual(null)
   })
+
   // TODO: test with errors
 })

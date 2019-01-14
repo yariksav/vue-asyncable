@@ -12,7 +12,6 @@ import { isFunction, isPromise, isNil } from './utils'
 
 export function promisify (fn, context) {
   let promise
-
   if (isFunction(fn)) {
     promise = fn.call(this, context)
   } else {
@@ -26,13 +25,16 @@ export function promisify (fn, context) {
       promise = Promise.resolve(promise)
     }
   }
+
+  let self = this
   return promise.then((data) => {
-    return checkObjectForPromises(data)
+    return checkObjectForPromises.call(self, data)
   })
 }
 
 export function checkObjectForPromises (obj, context) {
   let promises = []
+  let self = this
   let data = {}
   if (typeof obj !== 'object') {
     return obj
@@ -54,19 +56,9 @@ export function checkObjectForPromises (obj, context) {
         }
         return res
       })
-      // let newPromise = something.then((res) => {
-      //   if (isNil(res)) {
-      //     return
-      //   }
-      //   if (key.startsWith('...')) {
-      //     data = { ...data, ...res }
-      //   } else {
-      //     data[key] = res
-      //   }
-      // })
       if (context && isFunction(context.error)) {
         something = something.catch((error) => {
-          context.error({ error, key, obj })
+          context.error.call(self, { error, key, obj })
         })
       }
       promises.push(something)
