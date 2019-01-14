@@ -2,6 +2,24 @@
 
 > Async data loading plugin for Vue.js
 
+
+<p align="center">
+  <a href="https://npmcharts.com/compare/vue-asyncable?minimal=true">
+    <img src="http://img.shields.io/npm/dm/vue-asyncable.svg">
+  </a>
+  <a href="https://www.npmjs.org/package/vue-asyncable">
+    <img src="https://img.shields.io/npm/v/vue-asyncable.svg">
+  </a>
+  <a href="http://img.badgesize.io/https://unpkg.com/vue-asyncable/dist/vue-asyncable.js?compression=gzip&label=gzip%20size:%20JS">
+    <img src="http://img.badgesize.io/https://unpkg.com/vue-asyncable/dist/vue-asyncable.cjs.js?compression=gzip&label=gzip%20size:%20JS">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-green.svg">
+  </a>
+  <a href='https://coveralls.io/github/yariksav/vue-asyncable'><img src='https://coveralls.io/repos/github/yariksav/vue-asyncable/badge.svg' alt='Coverage Status' /></a>
+  <a href='https://travis-ci.org/yariksav/vue-asyncable'><img src='https://travis-ci.org/yariksav/vue-asyncable.svg?branch=master' /></a>
+</p>
+
 ### Install
 
 ``` bash
@@ -43,8 +61,8 @@ Property asyncData can be simple object
 Vue.component('example', {
   // ...
   asyncData: {
-    orders: this.$axios.$get('api/orders', { user_id: profile.id }),
-    news: this.$axios.$get('api/news', { user_id: profile.id })
+    orders: axios.$get('api/orders', { user_id: profile.id }),
+    news: axios.$get('api/news', { user_id: profile.id })
   }
 })
 ```
