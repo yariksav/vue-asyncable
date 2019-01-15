@@ -38,7 +38,7 @@ Then, in your component options, provide an `asyncData` function:
 ``` js
 Vue.component('example', {
   mixins: ['Asyncable'],
-  data: function {
+  data () {
     return {
       orders: [],
       news: []
@@ -55,7 +55,7 @@ Vue.component('example', {
 
 ### Object
 
-Property asyncData can be simple object
+Property asyncData can be simple object. In this case you don't need to define initial data elements, the module will set it's automatically
 
 ``` js
 Vue.component('example', {

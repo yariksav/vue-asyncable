@@ -27,8 +27,10 @@
   },
   "keywords": [
     "vue",
-    "dialog",
-    "modal"
+    "async",
+    "wait",
+    "asyncdata",
+    "promise"
   ],
   "author": "Yaroslav Savaryn",
   "license": "MIT",
