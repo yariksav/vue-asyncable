@@ -9,7 +9,7 @@
 */
 
 import Vue from 'vue'
-import { noopData } from './utils'
+import { noopData, isPromise } from './utils'
 import { promisify } from './promisify'
 
 export function applyComponentAsyncData (Component, asyncData) {
@@ -55,18 +55,31 @@ export const hasAsyncPreload = (options) => {
 }
 
 export const ensureVmAsyncData = (vm, context) => {
-  if (!hasAsyncPreload(vm.$options)) {
-    return Promise.resolve({})
+  // if (!hasAsyncPreload(vm.$options)) {
+  //   return Promise.resolve({})
+  // }
+
+  function hydrate (data) {
+    for (let key in data) {
+      vm.$set(vm, key, data[key])
+    }
+    return data
   }
   const promises = []
   if (vm.$options.asyncData) {
-    let promise = promisify.call(vm, vm.$options.asyncData, context).then((data) => {
-      for (let key in data) {
-        vm.$set(vm, key, data[key])
-      }
-      return data
-    })
-    promises.push(promise)
+    promises.push(promisify.call(vm, vm.$options.asyncData, context).then(hydrate))
+  }
+
+  let functionsInData = {}
+  Object.keys(vm.$data).forEach((key) => {
+    let value = vm.$data[key]
+    if (typeof value === 'function' || isPromise(value)) {
+      vm.$set(vm, key, null)
+      functionsInData[key] = value
+    }
+  })
+  if (Object.keys(functionsInData).length) {
+    promises.push(promisify.call(vm, functionsInData, context).then(hydrate))
   }
 
   if (vm.$options.fetch) {

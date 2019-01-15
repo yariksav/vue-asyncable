@@ -16,24 +16,19 @@ export default {
     this.$loadingAsyncData = true
     let self = this
     let context = {
-      error: this.handleErrorWrapper
+      error: this.handleError
     }
 
     ensureVmAsyncData(this, context)
       .then(() => {
         self.$loadingAsyncData = false
       }).catch((e) => {
-        self.handleError(e, 'load')
+        self.handleError(e, { type: 'load' })
         self.$loadingAsyncData = false
       })
   },
   methods: {
-    handleErrorWrapper ({ error, key, obj }) {
-      this.handleError(error, 'param', key)
-      // this.$set(this.$loadingErrors, key, true)
-    },
-    // errorCaptured()
-    handleError (e, type, key) {
+    handleError (e, { type, key }) {
       // if (process.env.NODE_ENV !== 'production') {
       console.error('Async data loading error', e, type, key)
       // }

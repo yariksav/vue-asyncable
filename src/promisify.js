@@ -58,7 +58,7 @@ export function checkObjectForPromises (obj, context) {
       })
       if (context && isFunction(context.error)) {
         something = something.catch((error) => {
-          context.error.call(self, { error, key, obj })
+          return context.error.call(self, error, { key, obj })
         })
       }
       promises.push(something)
