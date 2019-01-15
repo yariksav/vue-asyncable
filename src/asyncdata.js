@@ -51,7 +51,7 @@ export function sanitizeComponent (Component) {
 }
 
 export const hasAsyncPreload = (options) => {
-  return Boolean(!options.hasAsyncData && options.asyncData)
+  return Boolean(!options.hasAsyncData && (options.asyncData || options.fetch))
 }
 
 export const ensureVmAsyncData = (vm, context) => {
