@@ -55,21 +55,23 @@ export const hasAsyncPreload = (options) => {
 }
 
 export const ensureVmAsyncData = (vm, context) => {
-  // if (!hasAsyncPreload(vm.$options)) {
-  //   return Promise.resolve({})
-  // }
-
   function hydrate (data) {
     for (let key in data) {
       vm.$set(vm, key, data[key])
     }
     return data
   }
+
   const promises = []
-  if (vm.$options.asyncData) {
+
+  if (vm.$options.asyncData && !vm.$options.hasAsyncData) {
     promises.push(promisify.call(vm, vm.$options.asyncData, context).then(hydrate))
   }
+  if (vm.$options.fetch && !vm.$options.hasAsyncData) {
+    promises.push(vm.$options.fetch(context))
+  }
 
+  // firstly we see a data
   let functionsInData = {}
   Object.keys(vm.$data).forEach((key) => {
     let value = vm.$data[key]
@@ -82,9 +84,6 @@ export const ensureVmAsyncData = (vm, context) => {
     promises.push(promisify.call(vm, functionsInData, context).then(hydrate))
   }
 
-  if (vm.$options.fetch) {
-    promises.push(vm.$options.fetch(context))
-  }
   vm.$options.hasAsyncData = true
   return Promise.all(promises)
 }

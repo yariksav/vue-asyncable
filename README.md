@@ -72,7 +72,14 @@ You can also return a promise that resolves to the data, and return object with 
 
 ``` js
 Vue.component('example', {
-  // ...
+  mixins: [Asyncable],
+  data () {
+    return {
+      profile: null,
+      orders: null,
+      news: null
+    }
+  }
   async asyncData () {
     let profile = await this.$axios.$get('api/profile')
     return {
@@ -84,6 +91,27 @@ Vue.component('example', {
 })
 ```
 
+In this case you have to predefine all params in data function
+
+### Use promises in data function
+
+You can define props with promises directly in data function and mixin will:
+ 1) set params to null
+ 2) call all promise functions
+ 3) when promises have resolved - assign to data by key
+
+``` js
+Vue.component('example', {
+  mixins: [Asyncable],
+  async data () {
+    return {
+      simpleParam: 'test',
+      orders: this.$axios.$post('api/orders', { user_id: profile.id }),
+      news: this.$axios.$post('api/news', { user_id: profile.id })
+    }
+  }
+})
+```
 
 <!-- #### Reloading Data
 
