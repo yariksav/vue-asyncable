@@ -75,10 +75,10 @@ describe('async', () => {
     }
     let Component = sanitizeComponent(cmp)
     applyComponentAsyncData(Component, { baz: 'bad' })
-    expect(Component.options.hasAsyncData).toEqual(true)
+    expect(Component.options.__hasAsyncData).toEqual(true)
     applyComponentAsyncData(Component, { baz2: 'bad' })
     const wrapper = await mount(Component)
-    expect(wrapper.vm.$data).toEqual({ foo: 'bar', baz: 'bad' })
+    expect(wrapper.vm.$data).toMatchObject({ foo: 'bar', baz2: 'bad' })
   })
 
   it('should ensureAsyncData with no params', async () => {

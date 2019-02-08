@@ -9,23 +9,27 @@
 */
 
 import Vue from 'vue'
-import { noopData, isPromise } from './utils'
+import { isPromise } from './utils'
 import { promisify } from './promisify'
 
 export function applyComponentAsyncData (Component, asyncData) {
-  const componentData = Component.options.data || noopData
+  // const componentData = Component.options.data || noopData
   // Prevent calling this method for each request on SSR context
-  if (!asyncData || Component.options.hasAsyncData) { // && ?
+  if (!asyncData && Component.options.__hasAsyncData) { // && ?
     return
   }
-  Component.options.hasAsyncData = true
+  const ComponentData = Component.options._originDataFn || Component.options.data || function () { return {} }
+  Component.options._originDataFn = ComponentData
+
   Component.options.data = function () {
-    const data = componentData.call(this)
+    const data = ComponentData.call(this)
     // if (this.$ssrContext) {
     //   asyncData = this.$ssrContext.asyncData[component.cid]
     // }
     return { ...data, ...asyncData }
   }
+  Component.options.__hasAsyncData = true
+
   if (Component._Ctor && Component._Ctor.options) {
     Component._Ctor.options.data = Component.options.data
   }
@@ -51,7 +55,7 @@ export function sanitizeComponent (Component) {
 }
 
 export const hasAsyncPreload = (options) => {
-  return Boolean(!options.hasAsyncData && (options.asyncData || options.fetch))
+  return Boolean(!options.__hasAsyncData && (options.asyncData || options.fetch))
 }
 
 export const ensureVmAsyncData = (vm, context) => {
@@ -64,10 +68,10 @@ export const ensureVmAsyncData = (vm, context) => {
 
   const promises = []
 
-  if (vm.$options.asyncData && !vm.$options.hasAsyncData) {
+  if (vm.$options.asyncData && !vm.$options.__hasAsyncData) {
     promises.push(promisify.call(vm, vm.$options.asyncData, context).then(hydrate))
   }
-  if (vm.$options.fetch && !vm.$options.hasAsyncData) {
+  if (vm.$options.fetch && !vm.$options.__hasAsyncData) {
     promises.push(vm.$options.fetch(context))
   }
 
@@ -84,7 +88,7 @@ export const ensureVmAsyncData = (vm, context) => {
     promises.push(promisify.call(vm, functionsInData, context).then(hydrate))
   }
 
-  vm.$options.hasAsyncData = true
+  vm.$options.__hasAsyncData = true
   return Promise.all(promises)
 }
 
