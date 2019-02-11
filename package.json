@@ -1,6 +1,6 @@
 {
   "name": "vue-asyncable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "dist/vue-asyncable.umd.js",
   "module": "dist/vue-asyncable.esm.js",
