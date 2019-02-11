@@ -95,7 +95,7 @@ export const ensureVmAsyncData = (vm, context) => {
 export const ensureComponentAsyncData = (Component, context) => {
   const promises = []
 
-  if (Component.options.asyncData) {
+  if (Component.options.asyncData && !Component.options.__hasAsyncData) {
     let promise = promisify(Component.options.asyncData, context)
     promise.then((asyncDataResult) => {
       // ssrContext.asyncData[Component.cid] = asyncDataResult
@@ -106,9 +106,10 @@ export const ensureComponentAsyncData = (Component, context) => {
   }
 
   // Call fetch(context)
-  if (Component.options.fetch) {
+  if (Component.options.fetch && !Component.options.__hasAsyncData) {
     promises.push(Component.options.fetch(context))
   }
+  Component.options.__hasAsyncData = true
   return Promise.all(promises)
 }
 

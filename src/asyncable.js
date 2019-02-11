@@ -3,7 +3,6 @@ export default {
   data () {
     const data = {
       $loadingAsyncData: true
-      // $loadingErrors: {}
     }
     if (typeof this.$options.asyncData === 'object') {
       Object.keys(this.$options.asyncData).forEach(key => {
@@ -15,20 +14,17 @@ export default {
   created () {
     this.$loadingAsyncData = true
     let self = this
-    let context = {
-      error: this.handleError
-    }
 
-    ensureVmAsyncData(this, context)
+    ensureVmAsyncData(this, this)
       .then(() => {
         self.$loadingAsyncData = false
       }).catch((e) => {
-        self.handleError(e, { type: 'load' })
+        self.asyncDataError(e, { type: 'load' })
         self.$loadingAsyncData = false
       })
   },
   methods: {
-    handleError (e, { type, key }) {
+    asyncDataError (e, { type, key }) {
       // if (process.env.NODE_ENV !== 'production') {
       console.error('Async data loading error', e, type, key)
       // }

@@ -79,7 +79,7 @@ describe('promisify', () => {
 
     const errors = []
     const context = {
-      error: jest.fn((error) => {
+      asyncDataError: jest.fn((error) => {
         errors.push(error.message)
       })
     }
@@ -95,7 +95,7 @@ describe('promisify', () => {
 
     expect(fn1).toBeCalledTimes(1)
     expect(fn2).toBeCalledTimes(1)
-    expect(context.error).toHaveBeenCalledTimes(1)
+    expect(context.asyncDataError).toHaveBeenCalledTimes(1)
     expect(res).toEqual({
       simpleString: 'foo',
       simpleObject: { test: 1 },
