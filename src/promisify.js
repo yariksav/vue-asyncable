@@ -32,15 +32,28 @@ export function promisify (fn, context) {
   })
 }
 
-export function checkObjectForPromises (obj, context) {
-  let promises = []
-  let self = this
+function hasAsync (obj) {
+  if (!obj || typeof obj !== 'object') {
+    return false
+  }
+  for (const key in obj) {
+    if (isPromise(obj[key]) || isFunction(obj[key])) { // } || isFunction(obj[key])) {
+      return true
+    }
+  }
+  return false
+}
+
+export function checkObjectForPromises (obj, context = {}) {
+  const promises = []
+  const self = this
   let data = {}
   if (typeof obj !== 'object') {
     return obj
   }
-  for (let key in obj) {
+  for (const key in obj) {
     let something = obj[key]
+    // data[key] = null
     if (isFunction(something)) {
       something = something.call(this, context)
     }
@@ -56,14 +69,20 @@ export function checkObjectForPromises (obj, context) {
         }
         return res
       })
-      if (context && isFunction(context.asyncDataError)) {
+      if (isFunction(context.asyncDataError)) {
         something = something.catch((error) => {
           return context.asyncDataError.call(self, error, { key, obj })
         })
       }
       promises.push(something)
     } else {
-      data[key] = something
+      if (context.deep && hasAsync(something)) {
+        promises.push(checkObjectForPromises.call(self, something, context).then(res => {
+          data[key] = res
+        }))
+      } else {
+        data[key] = something
+      }
     }
   }
   return Promise.all(promises).then(() => {

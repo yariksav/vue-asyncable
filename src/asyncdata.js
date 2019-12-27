@@ -13,25 +13,20 @@ import { isPromise } from './utils'
 import { promisify } from './promisify'
 
 export function applyComponentAsyncData (Component, asyncData) {
-  // const componentData = Component.options.data || noopData
-  // Prevent calling this method for each request on SSR context
-  if (!asyncData && Component.options.__hasAsyncData) { // && ?
-    return
-  }
   const ComponentData = Component.options._originDataFn || Component.options.data || function () { return {} }
   Component.options._originDataFn = ComponentData
 
-  Component.options.data = function () {
-    const data = ComponentData.call(this)
-    // if (this.$ssrContext) {
-    //   asyncData = this.$ssrContext.asyncData[component.cid]
-    // }
-    return { ...data, ...asyncData }
-  }
-  Component.options.__hasAsyncData = true
+  if (!asyncData) {
+    Component.options.data = ComponentData
+  } else {
+    Component.options.data = function () {
+      const data = ComponentData.call(this)
+      return { ...data, ...asyncData }
+    }
 
-  if (Component._Ctor && Component._Ctor.options) {
-    Component._Ctor.options.data = Component.options.data
+    if (Component._Ctor && Component._Ctor.options) {
+      Component._Ctor.options.data = Component.options.data
+    }
   }
 }
 
@@ -55,7 +50,7 @@ export function sanitizeComponent (Component) {
 }
 
 export const hasAsyncPreload = (options) => {
-  return Boolean(!options.__hasAsyncData && (options.asyncData || options.fetch))
+  return Boolean(options.asyncData || options.fetch) // !options.__hasAsyncData && (
 }
 
 export const ensureVmAsyncData = (vm, context) => {
@@ -88,17 +83,16 @@ export const ensureVmAsyncData = (vm, context) => {
     promises.push(promisify.call(vm, functionsInData, context).then(hydrate))
   }
 
-  vm.$options.__hasAsyncData = true
+  // vm.$options.__hasAsyncData = true
   return Promise.all(promises)
 }
 
 export const ensureComponentAsyncData = (Component, context) => {
   const promises = []
 
-  if (Component.options.asyncData && !Component.options.__hasAsyncData) {
+  if (Component.options.asyncData) {
     let promise = promisify(Component.options.asyncData, context)
     promise.then((asyncDataResult) => {
-      // ssrContext.asyncData[Component.cid] = asyncDataResult
       applyComponentAsyncData(Component, asyncDataResult)
       return asyncDataResult
     })
@@ -106,10 +100,10 @@ export const ensureComponentAsyncData = (Component, context) => {
   }
 
   // Call fetch(context)
-  if (Component.options.fetch && !Component.options.__hasAsyncData) {
+  if (Component.options.fetch) {
     promises.push(Component.options.fetch(context))
   }
-  Component.options.__hasAsyncData = true
+  // Component.options.__hasAsyncData = true
   return Promise.all(promises)
 }
 

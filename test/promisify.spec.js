@@ -29,7 +29,7 @@ describe('promisify', () => {
     })
     expect(fn1).toHaveBeenCalledTimes(1)
     expect(fn2).toHaveBeenCalledTimes(1)
-    expect(res).toEqual({ foo: 'bar', arr: [ 'test' ], simpleString: 'foo', simpleObject: { test: 1 } })
+    expect(res).toEqual({ foo: 'bar', arr: [ 'test' ], simpleString: 'foo', simpleObject: { test: 1 } }) // , testNull: null
   })
 
   it('should work with object of async functions and object destructuring ', async () => {

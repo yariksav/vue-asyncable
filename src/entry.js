@@ -1,4 +1,5 @@
 import { promisify } from './promisify'
+import { isFunction, isPromise, isNil } from './utils'
 import {
   applyComponentAsyncData,
   ensureAsyncData,
@@ -15,5 +16,8 @@ export {
   ensureAsyncData,
   ensureComponentAsyncData,
   hasAsyncPreload,
-  sanitizeComponent
+  sanitizeComponent,
+  isFunction,
+  isPromise,
+  isNil
 }
